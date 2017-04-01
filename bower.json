@@ -1,0 +1,25 @@
+{
+  "name": "purescript-gen",
+  "homepage": "https://github.com/garyb/purescript-gen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/garyb/purescript-gen.git"
+  },
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "test",
+    "bower.json",
+    "package.json"
+  ],
+  "dependencies": {
+    "purescript-nonempty": "^4.0.0",
+    "purescript-tailrec": "^3.0.0",
+    "purescript-tuples": "^4.0.0",
+    "purescript-unfoldable": "^3.0.0",
+    "purescript-integers": "^3.0.0"
+  }
+}
