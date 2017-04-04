@@ -17,7 +17,7 @@ class Monad m <= MonadGen m where
   -- | Chooses a random boolean value.
   chooseBool :: m Boolean
 
-  -- | Modifies the size state for the current random generator.
+  -- | Modifies the size state for a random generator.
   resize :: forall a. (Size -> Size) -> m a -> m a
 
   -- | Runs a generator, passing in the current size state.
