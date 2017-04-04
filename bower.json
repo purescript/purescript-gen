@@ -1,10 +1,10 @@
 {
   "name": "purescript-gen",
-  "homepage": "https://github.com/garyb/purescript-gen",
+  "homepage": "https://github.com/purescript/purescript-gen",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/garyb/purescript-gen.git"
+    "url": "git://github.com/purescript/purescript-gen.git"
   },
   "ignore": [
     "**/.*",
