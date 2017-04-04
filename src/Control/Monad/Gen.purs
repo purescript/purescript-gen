@@ -1,18 +1,16 @@
 module Control.Monad.Gen
   ( module Control.Monad.Gen.Class
-  , merge
+  , choose
   , oneOf
   , frequency
   , elements
-  , alt
   , unfoldable
   , suchThat
   ) where
 
 import Prelude
 
-import Control.Alternative (class Alternative, empty)
-import Control.Monad.Gen.Class (class MonadGen, Size, genBool, chooseFloat, chooseInt, resize, sized)
+import Control.Monad.Gen.Class (class MonadGen, Size, chooseBool, chooseFloat, chooseInt, resize, sized)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 
 import Data.Foldable (class Foldable, length, foldl, foldMap)
@@ -27,9 +25,9 @@ import Data.Unfoldable (class Unfoldable, unfoldr)
 data LL a = Cons a (LL a) | Nil
 
 -- | Creates a generator that outputs a value chosen from one of two existing
--- | generators with even probability.
-merge :: forall m a. MonadGen m => m a -> m a -> m a
-merge genA genB = genBool >>= if _ then genA else genB
+-- | existing generators with even probability.
+choose :: forall m a b. MonadGen m => m a -> m a -> m a
+choose genA genB = chooseBool >>= if _ then genA else genB
 
 -- | Creates a generator that outputs a value chosen from a selection of
 -- | existing generators with uniform probability.
@@ -63,12 +61,6 @@ elements :: forall m f a. MonadGen m => Foldable f => NonEmpty f a -> m a
 elements (x :| xs) = do
   n <- chooseInt 0 (length xs)
   pure if n == 0 then x else fromIndex (n - 1) x xs
-
--- | Creates a generator that outputs a value for an `Alternative`, with even
--- | probability between returning `empty` and a value chosen from the passed
--- | generator.
-alt :: forall m f a. MonadGen m => Alternative f => m a -> m (f a)
-alt gen = merge (pure empty) (pure <$> gen)
 
 -- | Creates a generator that produces unfoldable structures based on an
 -- | existing generator for the elements.

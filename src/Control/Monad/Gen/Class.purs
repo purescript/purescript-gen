@@ -14,10 +14,10 @@ class Monad m <= MonadGen m where
   -- | Chooses an floating point number in the specified (inclusive) range.
   chooseFloat :: Number -> Number -> m Number
 
-  -- | Generates a random boolean value.
-  genBool :: m Boolean
+  -- | Chooses a random boolean value.
+  chooseBool :: m Boolean
 
-  -- | Modifies the size state for the current random generator.
+  -- | Modifies the size state for a random generator.
   resize :: forall a. (Size -> Size) -> m a -> m a
 
   -- | Runs a generator, passing in the current size state.
