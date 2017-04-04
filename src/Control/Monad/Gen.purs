@@ -1,5 +1,6 @@
 module Control.Monad.Gen
   ( module Control.Monad.Gen.Class
+  , choose
   , oneOf
   , frequency
   , elements
@@ -22,6 +23,11 @@ import Data.Tuple (Tuple(..), fst, snd)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 
 data LL a = Cons a (LL a) | Nil
+
+-- | Creates a generator that outputs a value chosen from a selection of
+-- | existing generators with uniform probability.
+choose :: forall m a b. MonadGen m => m a -> m a -> m a
+choose genA genB = chooseBool >>= if _ then genA else genB
 
 -- | Creates a generator that outputs a value chosen from a selection of
 -- | existing generators with uniform probability.
