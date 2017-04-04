@@ -26,7 +26,7 @@ data LL a = Cons a (LL a) | Nil
 
 -- | Creates a generator that outputs a value chosen from one of two existing
 -- | existing generators with even probability.
-choose :: forall m a b. MonadGen m => m a -> m a -> m a
+choose :: forall m a. MonadGen m => m a -> m a -> m a
 choose genA genB = chooseBool >>= if _ then genA else genB
 
 -- | Creates a generator that outputs a value chosen from a selection of

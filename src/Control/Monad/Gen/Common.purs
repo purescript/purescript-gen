@@ -2,7 +2,6 @@ module Control.Monad.Gen.Common where
 
 import Prelude
 
-import Control.Alt (class Alt)
 import Control.Apply (lift2)
 import Control.Monad.Gen (class MonadGen, choose, chooseFloat)
 
