@@ -1,17 +1,19 @@
 module Control.Monad.Gen.Common where
 
 import Prelude
-
 import Control.Apply (lift2)
-import Control.Monad.Gen (class MonadGen, resize, choose, chooseFloat, unfoldable)
+import Control.Monad.Gen (class MonadGen, resize, choose, chooseInt, chooseFloat, unfoldable)
 import Control.Monad.Rec.Class (class MonadRec)
-
 import Data.Either (Either(..))
 import Data.Identity (Identity(..))
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (class Unfoldable)
+
+-- | Creates a generator that outputs `Int` values within the maximum range
+genInt :: forall m. MonadGen m => m Int
+genInt = chooseInt bottom top
 
 -- | Creates a generator that outputs `Either` values, choosing a value from a
 -- | `Left` or the `Right` with even probability.
