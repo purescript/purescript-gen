@@ -21,5 +21,12 @@
     "purescript-tuples": "^4.0.0",
     "purescript-unfoldable": "^3.0.0",
     "purescript-integers": "^3.0.0"
+  },
+  "devDependencies": {
+    "purescript-console": "^3.0.0",
+    "purescript-assert": "^3.0.0",
+    "purescript-arrays": "^4.2.1",
+    "purescript-transformers": "^3.4.0",
+    "purescript-math": "^2.1.0"
   }
 }
