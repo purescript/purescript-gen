@@ -14,7 +14,6 @@ import Control.Monad.Gen.Class (class MonadGen, Size, chooseBool, chooseFloat, c
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
 
 import Data.Foldable (class Foldable, length, foldl, foldMap)
-import Data.Int as Int
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Monoid.Additive (Additive(..))
 import Data.Newtype (alaF)
@@ -46,15 +45,26 @@ frequency
   => Foldable f
   => NonEmpty f (Tuple Number (m a))
   -> m a
-frequency (x :| xs) =
+frequency (x :| xs) = 
   let
     first = fst x
     total = first + alaF Additive foldMap fst xs
-  in do
-    pos <- chooseFloat 0.0 total
-    let n = Int.round (pos / total * length xs)
-    snd $ if n == 0 then x else fromIndex (n - 1) x xs
-
+  in 
+    chooseFloat 0.0 total >>= pick
+  where
+  pick pos = 
+    let
+      initial = go (Tuple 0.0 $ snd x) x
+    in 
+      snd $ foldl go initial xs
+    where
+    go (Tuple weight val) (Tuple currWeight currVal) =
+      let
+        nextWeight = weight + currWeight 
+      in 
+        if weight <= pos && pos <= nextWeight
+          then Tuple nextWeight currVal
+          else Tuple nextWeight val
 -- | Creates a generator that outputs a value chosen from a selection with
 -- | uniform probability.
 elements :: forall m f a. MonadGen m => Foldable f => NonEmpty f a -> m a
