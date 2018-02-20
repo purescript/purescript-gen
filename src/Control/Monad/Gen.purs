@@ -103,18 +103,17 @@ unfoldable gen = unfoldr unfold <$> sized (tailRecM loopGen <<< Tuple Nil)
 -- | matches a given predicate. This will never halt if the predicate always
 -- | fails.
 suchThat :: forall m a. MonadRec m => MonadGen m => m a -> (a -> Boolean) -> m a
-suchThat gen pred = gen `mapMaybe` \a -> if pred a then Just a else Nothing
+suchThat gen pred = filtered $ gen <#> \a -> if pred a then Just a else Nothing
 
--- | Creates a generator that repeatedly run another generator until predicate
--- | returns `Just` node for it's output. This will never halt if the predicate
--- | always returns Nothing.
-mapMaybe :: forall m a b. MonadRec m => MonadGen m => m a -> (a -> Maybe b) -> m b
-mapMaybe gen pred = tailRecM go unit
+-- | Creates a generator that repeatedly run another generator until it produces
+-- | `Just` node. This will never halt if the input generatr always produces Nothing.
+filtered :: forall m a b. MonadRec m => MonadGen m => m (Maybe a) -> m a
+filtered gen = tailRecM go unit
   where
-  go :: Unit -> m (Step Unit b)
-  go _ = gen <#> \a -> case pred a of
+  go :: Unit -> m (Step Unit a)
+  go _ = gen <#> \a -> case a of
     Nothing -> Loop unit
-    Just b -> Done b
+    Just a -> Done a
 
 fromIndex :: forall f a. Foldable f => Int -> a -> f a -> a
 fromIndex i a = fromMaybe a <<< snd <<< (foldl go (Tuple 0 (Just a)))
