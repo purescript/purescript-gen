@@ -12,12 +12,11 @@ import Prelude
 
 import Control.Monad.Gen.Class (class MonadGen, Size, chooseBool, chooseFloat, chooseInt, resize, sized)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
-
-import Data.Foldable (class Foldable, length, foldl, foldMap)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Foldable (foldMap, length)
+import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
 import Data.Newtype (alaF)
-import Data.NonEmpty (NonEmpty, (:|))
+import Data.Semigroup.Foldable (class Foldable1, foldMap1)
 import Data.Tuple (Tuple(..), fst, snd)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 
@@ -30,10 +29,29 @@ choose genA genB = chooseBool >>= if _ then genA else genB
 
 -- | Creates a generator that outputs a value chosen from a selection of
 -- | existing generators with uniform probability.
-oneOf :: forall m f a. MonadGen m => Foldable f => NonEmpty f (m a) -> m a
-oneOf (x :| xs) = do
-  n <- chooseInt 0 (length xs)
-  if n < 1 then x else fromIndex (n - 1) x xs
+oneOf :: forall m f a. MonadGen m => Foldable1 f => f (m a) -> m a
+oneOf xs = do
+  n <- chooseInt 0 (length xs - 1)
+  fromIndex n xs
+
+newtype FreqSemigroup a = FreqSemigroup (Number -> Tuple (Maybe Number) a)
+
+freqSemigroup :: forall a. Tuple Number a -> FreqSemigroup a
+freqSemigroup (Tuple weight x) =
+  FreqSemigroup \pos ->
+    if pos >= weight
+      then Tuple (Just (pos - weight)) x
+      else Tuple Nothing x
+
+getFreqVal :: forall a. FreqSemigroup a -> Number -> a
+getFreqVal (FreqSemigroup f) = snd <<< f
+
+instance semigroupFreqSemigroup :: Semigroup (FreqSemigroup a) where
+  append (FreqSemigroup f) (FreqSemigroup g) =
+    FreqSemigroup \pos ->
+      case f pos of
+        Tuple (Just pos') _ -> g pos'
+        result -> result
 
 -- | Creates a generator that outputs a value chosen from a selection of
 -- | existing generators, where the selection has weight values for the
@@ -42,35 +60,19 @@ oneOf (x :| xs) = do
 frequency
   :: forall m f a
    . MonadGen m
-  => Foldable f
-  => NonEmpty f (Tuple Number (m a))
+  => Foldable1 f
+  => f (Tuple Number (m a))
   -> m a
-frequency (x :| xs) = 
-  let
-    first = fst x
-    total = first + alaF Additive foldMap fst xs
-  in 
-    chooseFloat 0.0 total >>= pick
-  where
-  pick pos = 
-    let
-      initial = go (Tuple 0.0 $ snd x) x
-    in 
-      snd $ foldl go initial xs
-    where
-    go (Tuple weight val) (Tuple currWeight currVal) =
-      let
-        nextWeight = weight + currWeight 
-      in 
-        if weight <= pos && pos <= nextWeight
-          then Tuple nextWeight currVal
-          else Tuple nextWeight val
+frequency xs =
+  let total = alaF Additive foldMap fst xs
+  in  chooseFloat 0.0 total >>= getFreqVal (foldMap1 freqSemigroup xs)
+
 -- | Creates a generator that outputs a value chosen from a selection with
 -- | uniform probability.
-elements :: forall m f a. MonadGen m => Foldable f => NonEmpty f a -> m a
-elements (x :| xs) = do
-  n <- chooseInt 0 (length xs)
-  pure if n == 0 then x else fromIndex (n - 1) x xs
+elements :: forall m f a. MonadGen m => Foldable1 f => f a -> m a
+elements xs = do
+  n <- chooseInt 0 (length xs - 1)
+  pure $ fromIndex n xs
 
 -- | Creates a generator that produces unfoldable structures based on an
 -- | existing generator for the elements.
@@ -115,7 +117,22 @@ filtered gen = tailRecM go unit
     Nothing -> Loop unit
     Just a' -> Done a'
 
-fromIndex :: forall f a. Foldable f => Int -> a -> f a -> a
-fromIndex i a = fromMaybe a <<< snd <<< (foldl go (Tuple 0 (Just a)))
+-- | Internal: used by fromIndex
+newtype AtIndex a = AtIndex (Int -> a)
+
+instance semigroupAtIndex :: Semigroup (AtIndex a)
   where
-  go (Tuple ix v) x = Tuple (ix + 1) (if ix == i then Just x else v)
+  append (AtIndex f) (AtIndex g) =
+    AtIndex \i -> if i <= 0 then f i else g (i - 1)
+
+atIndex :: forall a. a -> AtIndex a
+atIndex = AtIndex <<< const
+
+getAtIndex :: forall a. AtIndex a -> Int -> a
+getAtIndex (AtIndex f) = f
+
+-- | Internal: get the Foldable element at index i.
+-- | If the index is <= 0, return the first element.
+-- | If it's >= length, return the last.
+fromIndex :: forall f a. Foldable1 f => Int -> f a -> a
+fromIndex i xs = getAtIndex (foldMap1 atIndex xs) i
