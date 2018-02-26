@@ -6,6 +6,7 @@ module Control.Monad.Gen
   , elements
   , unfoldable
   , suchThat
+  , filtered
   ) where
 
 import Prelude
