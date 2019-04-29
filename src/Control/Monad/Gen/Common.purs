@@ -64,4 +64,4 @@ genNonEmpty
   => Unfoldable f
   => m a
   -> m (NonEmpty f a)
-genNonEmpty gen = (:|) <$> gen <*> resize (_ - 1) (unfoldable gen)
+genNonEmpty gen = (:|) <$> gen <*> resize (max 0 <<< (_ - 1)) (unfoldable gen)

@@ -91,12 +91,12 @@ unfoldable
 unfoldable gen = unfoldr unfold <$> sized (tailRecM loopGen <<< Tuple Nil)
   where
   loopGen :: Tuple (LL a) Int -> m (Step (Tuple (LL a) Int) (LL a))
-  loopGen = case _ of
-    Tuple acc 0 ->
-      pure $ Done acc
-    Tuple acc n -> do
-      x <- gen
-      pure $ Loop (Tuple (Cons x acc) (n - 1))
+  loopGen (Tuple acc n)
+    | n <= 0 =
+        pure $ Done acc
+    | otherwise = do
+        x <- gen
+        pure $ Loop (Tuple (Cons x acc) (n - 1))
   unfold :: LL a -> Maybe (Tuple a (LL a))
   unfold = case _ of
     Nil -> Nothing
