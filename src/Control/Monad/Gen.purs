@@ -13,11 +13,12 @@ import Prelude
 
 import Control.Monad.Gen.Class (class MonadGen, Size, chooseBool, chooseFloat, chooseInt, resize, sized)
 import Control.Monad.Rec.Class (class MonadRec, Step(..), tailRecM)
-import Data.Foldable (foldMap, length)
+import Data.Foldable (foldMap, foldr, length)
 import Data.Maybe (Maybe(..))
 import Data.Monoid.Additive (Additive(..))
-import Data.Newtype (alaF)
+import Data.Newtype (alaF, un)
 import Data.Semigroup.Foldable (class Foldable1, foldMap1)
+import Data.Semigroup.Last (Last(..))
 import Data.Tuple (Tuple(..), fst, snd)
 import Data.Unfoldable (class Unfoldable, unfoldr)
 
@@ -118,22 +119,12 @@ filtered gen = tailRecM go unit
     Nothing -> Loop unit
     Just a' -> Done a'
 
--- | Internal: used by fromIndex
-newtype AtIndex a = AtIndex (Int -> a)
-
-instance semigroupAtIndex :: Semigroup (AtIndex a)
-  where
-  append (AtIndex f) (AtIndex g) =
-    AtIndex \i -> if i <= 0 then f i else g (i - 1)
-
-atIndex :: forall a. a -> AtIndex a
-atIndex = AtIndex <<< const
-
-getAtIndex :: forall a. AtIndex a -> Int -> a
-getAtIndex (AtIndex f) = f
-
 -- | Internal: get the Foldable element at index i.
 -- | If the index is <= 0, return the first element.
 -- | If it's >= length, return the last.
 fromIndex :: forall f a. Foldable1 f => Int -> f a -> a
-fromIndex i xs = getAtIndex (foldMap1 atIndex xs) i
+fromIndex i xs = go i (foldr Cons Nil xs)
+  where
+    go j (Cons a _) | j <= 0 = a
+    go j (Cons _ as) = go (j - 1) as
+    go _ Nil = un Last (foldMap1 Last xs)

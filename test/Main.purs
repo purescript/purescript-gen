@@ -31,6 +31,13 @@ main = do
     log "`genNonEmpty` should not reduce the remainder size below zero"
     one :: NonEmpty Array Int ← Gen.resize (const 0) $ GenC.genNonEmpty (Gen.sized pure)
     liftEffect $ assertEqual { actual: one, expected: 0 :| [] }
+    
+    log "Ensure that `elements` will produce all possible values (tests will hang if this fails)"
+    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "A")
+    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "B")
+    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "C")
+    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "D")
+    pure unit
 
 --------------------------------------------------------------------------------
 
