@@ -125,6 +125,8 @@ filtered gen = tailRecM go unit
 fromIndex :: forall f a. Foldable1 f => Int -> f a -> a
 fromIndex i xs = go i (foldr Cons Nil xs)
   where
+    go _ (Cons a Nil) = a
     go j (Cons a _) | j <= 0 = a
     go j (Cons _ as) = go (j - 1) as
-    go _ Nil = un Last (foldMap1 Last xs)
+    -- next case is "impossible", but serves as proof of non-emptyness
+    go _ Nil = un Last (foldMap1 Last xs) 
