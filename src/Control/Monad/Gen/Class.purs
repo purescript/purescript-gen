@@ -6,6 +6,9 @@ import Prelude
 -- |
 -- | Instances should provide implementations for the generation functions
 -- | that return choices with uniform probability.
+-- |
+-- | See also `Gen` in `purescript-quickcheck`, which implements this
+-- | type class.
 class Monad m <= MonadGen m where
 
   -- | Chooses an integer in the specified (inclusive) range.
