@@ -30,6 +30,9 @@
   "devDependencies": {
     "purescript-assert": "^4.1.0",
     "purescript-console": "^4.2.0",
-    "purescript-lcg": "^2.0.0"
-  }
+    "purescript-lcg": "^2.0.0",
+    "purescript-arrays": "^5.3.1",
+    "purescript-transformers": "^4.2.0",
+    "purescript-math": "^2.1.1"
+   }
 }

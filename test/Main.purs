@@ -14,6 +14,7 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Class.Console (log)
 import Random.LCG as LCG
 import Test.Assert (assertEqual)
+import Test.Frequency as Frequency
 
 main :: Effect Unit
 main = do
@@ -31,6 +32,9 @@ main = do
     log "`genNonEmpty` should not reduce the remainder size below zero"
     one :: NonEmpty Array Int ← Gen.resize (const 0) $ GenC.genNonEmpty (Gen.sized pure)
     liftEffect $ assertEqual { actual: one, expected: 0 :| [] }
+
+  log "check frequency"
+  Frequency.check
 
 --------------------------------------------------------------------------------
 
