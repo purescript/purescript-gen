@@ -30,6 +30,9 @@
   "devDependencies": {
     "purescript-assert": "master",
     "purescript-console": "master",
-    "purescript-lcg": "master"
+    "purescript-lcg": "master",
+    "purescript-arrays": "master",
+    "purescript-transformers": "master",
+    "purescript-math": "master"
   }
 }
