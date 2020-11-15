@@ -14,6 +14,7 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Class.Console (log)
 import Random.LCG as LCG
 import Test.Assert (assertEqual)
+import Test.Frequency as Frequency
 
 main :: Effect Unit
 main = do
@@ -38,6 +39,9 @@ main = do
     _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "C")
     _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "D")
     pure unit
+
+  log "check frequency"
+  Frequency.check
 
 --------------------------------------------------------------------------------
 
