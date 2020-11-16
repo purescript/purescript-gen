@@ -5,8 +5,10 @@ import Prelude
 import Control.Monad.Gen as Gen
 import Control.Monad.Gen.Common as GenC
 import Control.Monad.Rec.Class (class MonadRec, tailRecM)
+import Data.Array as Array
 import Data.Bifunctor (bimap)
 import Data.Int as Int
+import Data.Foldable (foldl)
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Tuple (Tuple(..), snd)
 import Effect (Effect)
@@ -32,12 +34,19 @@ main = do
     log "`genNonEmpty` should not reduce the remainder size below zero"
     one :: NonEmpty Array Int ← Gen.resize (const 0) $ GenC.genNonEmpty (Gen.sized pure)
     liftEffect $ assertEqual { actual: one, expected: 0 :| [] }
-    
-    log "Ensure that `elements` will produce all possible values (tests will hang if this fails)"
-    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "A")
-    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "B")
-    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "C")
-    _ ← Gen.suchThat (Gen.elements ("A" :| ["B", "C", "D"])) (_ == "D")
+
+    log "Ensure that `elements` will produce all possible values (low chance of false negative)"
+    let testElems = "A" :| ["B", "C", "D"]
+    elems :: Array String <- Gen.resize (\_ -> 1000) (Gen.unfoldable (Gen.elements testElems))
+
+    let
+      -- implement a Set-like value without depending on ordered-collections
+      -- because that library depends on this one.
+      addElemIfNew arr e = if Array.elem e arr then arr else Array.snoc arr e
+      actualElems = Array.sort $ foldl addElemIfNew [] elems
+      expectedElems = foldl Array.snoc [] testElems
+
+    liftEffect $ assertEqual { actual: actualElems, expected: expectedElems }
     pure unit
 
   log "check frequency"
