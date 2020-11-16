@@ -37,6 +37,9 @@ main = do
 
     log "Ensure that `elements` will produce all possible values (low chance of false negative)"
     let testElems = "A" :| ["B", "C", "D"]
+
+    -- use `resize` to generate an Array of 1,000 elements
+    -- to reduce the chance of a false positive.
     elems :: Array String <- Gen.resize (\_ -> 1000) (Gen.unfoldable (Gen.elements testElems))
 
     let
