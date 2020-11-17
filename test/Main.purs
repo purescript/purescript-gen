@@ -45,8 +45,7 @@ main = do
     let
       -- implement a Set-like value without depending on ordered-collections
       -- because that library depends on this one.
-      addElemIfNew arr e = if Array.elem e arr then arr else Array.snoc arr e
-      actualElems = Array.sort $ foldl addElemIfNew [] elems
+      actualElems = Array.sort $ Array.nub elems
       expectedElems = foldl Array.snoc [] testElems
 
     liftEffect $ assertEqual { actual: actualElems, expected: expectedElems }
