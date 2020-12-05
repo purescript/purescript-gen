@@ -1,7 +1,7 @@
 # purescript-gen
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-gen.svg)](https://github.com/purescript/purescript-gen/releases)
-[![Build status](https://travis-ci.org/purescript/purescript-gen.svg?branch=master)](https://travis-ci.org/purescript/purescript-gen)
+[![Build status](https://github.com/purescript/purescript-gen/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-gen/actions?query=workflow%3ACI+branch%3Amaster)
 
 A type class for random generator implementations.
 
@@ -10,7 +10,7 @@ Note that this library only provides the `MonadGen` type class; it does not prov
 ## Installation
 
 ```
-bower install purescript-gen
+spago install gen
 ```
 
 ## Documentation
