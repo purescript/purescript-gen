@@ -2,6 +2,7 @@
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-gen.svg)](https://github.com/purescript/purescript-gen/releases)
 [![Build status](https://github.com/purescript/purescript-gen/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-gen/actions?query=workflow%3ACI+branch%3Amaster)
+[![Pursuit](https://pursuit.purescript.org/packages/purescript-gen/badge)](https://pursuit.purescript.org/packages/purescript-gen)
 
 A type class for random generator implementations.
 
