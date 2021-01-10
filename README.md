@@ -11,7 +11,7 @@ Note that this library only provides the `MonadGen` type class; it does not prov
 ## Installation
 
 ```
-spago install gen
+spago install ge
 ```
 
 ## Documentation
