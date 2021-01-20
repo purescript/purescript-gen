@@ -23,7 +23,7 @@ Other improvements:
 
 ## [v2.0.0](https://github.com/purescript/purescript-gen/releases/tag/v2.0.0) - 2018-05-23
 
-Updated for PureScript 0.12
+- Updated for PureScript 0.12
 
 ## [v1.3.1](https://github.com/purescript/purescript-gen/releases/tag/v1.3.1) - 2018-02-26
 
