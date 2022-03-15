@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Gen (class MonadGen, frequency)
 import Control.Monad.State (State, class MonadState, get, put, evalStateT)
-import Data.Array (replicate, group', length)
+import Data.Array (replicate, groupAll, length)
 import Data.Array.NonEmpty (toNonEmpty)
 import Data.Newtype (unwrap)
 import Data.NonEmpty ((:|), NonEmpty(..))
@@ -52,7 +52,7 @@ check =
         ]
     abcArrGen = sequence $ replicate 200 abcGen
     abcArr = runTestGenFrequency abcArrGen `evalStateT` 0.0 # unwrap
-    actual = group' abcArr <#> \nea -> case toNonEmpty nea of
+    actual = groupAll abcArr <#> \nea -> case toNonEmpty nea of
       NonEmpty x xs -> Tuple (length xs + 1) x
     expected =
       [ (Tuple 10 "A")
