@@ -32,7 +32,6 @@
     "purescript-assert": "^6.0.0",
     "purescript-console": "^6.0.0",
     "purescript-lcg": "^4.0.0",
-    "purescript-math": "master",
     "purescript-transformers": "^6.0.0"
   }
 }
