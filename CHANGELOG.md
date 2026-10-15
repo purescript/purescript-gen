@@ -11,6 +11,7 @@ Other improvements:
 ## [v4.0.0](https://github.com/purescript/purescript-gen/releases/tag/v4.0.0) - 2022-04-27
 
 Breaking changes:
+
 - Update project and deps to PureScript v0.15.0 (#35 by @JordanMartinez)
 
 New features:
@@ -22,15 +23,18 @@ Other improvements:
 ## [v3.0.0](https://github.com/purescript/purescript-gen/releases/tag/v3.0.0) - 2021-02-26
 
 Breaking changes:
+
 - Added support for PureScript 0.14 and dropped support for all previous versions (#26)
 
 New features:
 
 Bugfixes:
+
 - Make `elements` test no longer hang at cost of possible false negative (#29)
 - Fixed `fromIndex` internal helper in tests (#23)
 
 Other improvements:
+
 - Refer people to the `quickcheck` package's `Gen` type as a default implementation for `MonadGen` (#25)
 - Restored frequency tests (#28)
 - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#30)

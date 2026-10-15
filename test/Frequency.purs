@@ -3,11 +3,11 @@ module Test.Frequency where
 import Prelude
 
 import Control.Monad.Gen (class MonadGen, frequency)
-import Control.Monad.State (State, class MonadState, get, put, evalStateT)
-import Data.Array (replicate, groupAll, length)
+import Control.Monad.State (class MonadState, State, evalStateT, get, put)
+import Data.Array (groupAll, length, replicate)
 import Data.Array.NonEmpty (toNonEmpty)
 import Data.Newtype (unwrap)
-import Data.NonEmpty ((:|), NonEmpty(..))
+import Data.NonEmpty (NonEmpty(..), (:|))
 import Data.Number (remainder)
 import Data.Traversable (sequence)
 import Data.Tuple (Tuple(..))
@@ -16,6 +16,7 @@ import Partial.Unsafe (unsafeCrashWith)
 import Test.Assert (assert)
 
 newtype TestGenFrequency a = TestGenFrequency (State Number a)
+
 derive newtype instance testGenFunctor :: Functor TestGenFrequency
 derive newtype instance testGenApply :: Apply TestGenFrequency
 derive newtype instance testGenBind :: Bind TestGenFrequency
@@ -42,14 +43,14 @@ check =
     abcGen :: TestGenFrequency String
     abcGen =
       frequency $
-        ( Tuple 10.0 $ pure "A" ) :|
-        [ Tuple 20.0 $ pure "B"
-        , Tuple  0.0 $ pure "Z"
-        , Tuple 30.0 $ pure "C"
-        , Tuple 40.0 $ pure "D"
-        , Tuple 50.0 $ pure "E"
-        , Tuple 50.0 $ pure "F"
-        ]
+        (Tuple 10.0 $ pure "A") :|
+          [ Tuple 20.0 $ pure "B"
+          , Tuple 0.0 $ pure "Z"
+          , Tuple 30.0 $ pure "C"
+          , Tuple 40.0 $ pure "D"
+          , Tuple 50.0 $ pure "E"
+          , Tuple 50.0 $ pure "F"
+          ]
     abcArrGen = sequence $ replicate 200 abcGen
     abcArr = runTestGenFrequency abcArrGen `evalStateT` 0.0 # unwrap
     actual = groupAll abcArr <#> \nea -> case toNonEmpty nea of

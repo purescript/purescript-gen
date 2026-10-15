@@ -41,9 +41,8 @@ newtype FreqSemigroup a = FreqSemigroup (Number -> Tuple (Maybe Number) a)
 freqSemigroup :: forall a. Tuple Number a -> FreqSemigroup a
 freqSemigroup (Tuple weight x) =
   FreqSemigroup \pos ->
-    if pos >= weight
-      then Tuple (Just (pos - weight)) x
-      else Tuple Nothing x
+    if pos >= weight then Tuple (Just (pos - weight)) x
+    else Tuple Nothing x
 
 getFreqVal :: forall a. FreqSemigroup a -> Number -> a
 getFreqVal (FreqSemigroup f) = snd <<< f
@@ -66,8 +65,10 @@ frequency
   => f (Tuple Number (m a))
   -> m a
 frequency xs =
-  let total = alaF Additive foldMap fst xs
-  in  chooseFloat 0.0 total >>= getFreqVal (foldMap1 freqSemigroup xs)
+  let
+    total = alaF Additive foldMap fst xs
+  in
+    chooseFloat 0.0 total >>= getFreqVal (foldMap1 freqSemigroup xs)
 
 -- | Creates a generator that outputs a value chosen from a selection with
 -- | uniform probability.
@@ -98,6 +99,7 @@ unfoldable gen = unfoldr unfold <$> sized (tailRecM loopGen <<< Tuple Nil)
     | otherwise = do
         x <- gen
         pure $ Loop (Tuple (Cons x acc) (n - 1))
+
   unfold :: LL a -> Maybe (Tuple a (LL a))
   unfold = case _ of
     Nil -> Nothing
@@ -125,8 +127,8 @@ filtered gen = tailRecM go unit
 fromIndex :: forall f a. Foldable1 f => Int -> f a -> a
 fromIndex i xs = go i (foldr Cons Nil xs)
   where
-    go _ (Cons a Nil) = a
-    go j (Cons a _) | j <= 0 = a
-    go j (Cons _ as) = go (j - 1) as
-    -- next case is "impossible", but serves as proof of non-emptyness
-    go _ Nil = un Last (foldMap1 Last xs) 
+  go _ (Cons a Nil) = a
+  go j (Cons a _) | j <= 0 = a
+  go j (Cons _ as) = go (j - 1) as
+  -- next case is "impossible", but serves as proof of non-emptyness
+  go _ Nil = un Last (foldMap1 Last xs)
