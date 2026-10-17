@@ -99,7 +99,7 @@ lcgStep =
     pure $ Tuple (Tuple (LCG.lcgNext seed) size) (LCG.unSeed seed)
 
 uniform :: TestGen Number
-uniform = lcgStep <#> (\n -> Int.toNumber n / Int.toNumber LCG.lcgM)
+uniform = lcgStep <#> \n -> Int.toNumber n / Int.toNumber LCG.lcgM
 
 unTestGen :: forall a. TestGen a -> GenState -> Effect (Tuple GenState a)
 unTestGen (TestGen k) = k

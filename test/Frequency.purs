@@ -38,7 +38,7 @@ runTestGenFrequency :: TestGenFrequency ~> State Number
 runTestGenFrequency (TestGenFrequency x) = x
 
 check :: Effect Unit
-check =
+check = do
   let
     abcGen :: TestGenFrequency String
     abcGen =
@@ -63,5 +63,4 @@ check =
       , (Tuple 50 "E")
       , (Tuple 50 "F")
       ]
-  in
-    assert (expected == actual)
+  assert (expected == actual)
