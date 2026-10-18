@@ -7,8 +7,8 @@ import Control.Monad.Gen.Common as GenC
 import Control.Monad.Rec.Class (class MonadRec, tailRecM)
 import Data.Array as Array
 import Data.Bifunctor (bimap)
-import Data.Int as Int
 import Data.Foldable (foldl)
+import Data.Int as Int
 import Data.NonEmpty (NonEmpty, (:|))
 import Data.Tuple (Tuple(..), snd)
 import Effect (Effect)
@@ -21,22 +21,22 @@ import Test.Frequency as Frequency
 main :: Effect Unit
 main = do
 
-  seed ← LCG.randomSeed
+  seed <- LCG.randomSeed
 
   runTestGen seed do
 
     log $ show seed
 
     log "`unfoldable` should not loop on negative size"
-    nil :: Array Unit ← Gen.resize (const (-1)) $ Gen.unfoldable (pure unit)
+    nil :: Array Unit <- Gen.resize (const (-1)) $ Gen.unfoldable (pure unit)
     liftEffect $ assertEqual { actual: nil, expected: [] }
 
     log "`genNonEmpty` should not reduce the remainder size below zero"
-    one :: NonEmpty Array Int ← Gen.resize (const 0) $ GenC.genNonEmpty (Gen.sized pure)
+    one :: NonEmpty Array Int <- Gen.resize (const 0) $ GenC.genNonEmpty (Gen.sized pure)
     liftEffect $ assertEqual { actual: one, expected: 0 :| [] }
 
     log "Ensure that `elements` will produce all possible values (low chance of false negative)"
-    let testElems = "A" :| ["B", "C", "D"]
+    let testElems = "A" :| [ "B", "C", "D" ]
 
     -- use `resize` to generate an Array of 1,000 elements
     -- to reduce the chance of a false positive.
@@ -79,9 +79,9 @@ instance monadTestGen :: Monad TestGen
 instance monadRecTestGen :: MonadRec TestGen where
   tailRecM f a = TestGen (tailRecM go <<< flip Tuple a)
     where
-      go (Tuple s a') =
-        unTestGen (f a') s >>= \(Tuple s' m) ->
-          pure $ bimap (Tuple s') (Tuple s') m
+    go (Tuple s a') =
+      unTestGen (f a') s >>= \(Tuple s' m) ->
+        pure $ bimap (Tuple s') (Tuple s') m
 
 instance monadGenTestGen :: Gen.MonadGen TestGen where
   chooseInt a b = Int.round <$> Gen.chooseFloat (Int.toNumber a) (Int.toNumber b)
@@ -99,7 +99,7 @@ lcgStep =
     pure $ Tuple (Tuple (LCG.lcgNext seed) size) (LCG.unSeed seed)
 
 uniform :: TestGen Number
-uniform = lcgStep <#> (\n -> Int.toNumber n / Int.toNumber LCG.lcgM)
+uniform = lcgStep <#> \n -> Int.toNumber n / Int.toNumber LCG.lcgM
 
 unTestGen :: forall a. TestGen a -> GenState -> Effect (Tuple GenState a)
 unTestGen (TestGen k) = k
